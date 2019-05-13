@@ -109,14 +109,14 @@ def buildJob(opSeq, shots, backend, reps):
     dimW1 = 4  #Number of quantum circuits to run for weight 1 block
     dimW2 = 2  #Number of quantum circuits to run for weight 2 block
     #qp = QuantumProgram()
-    qr = QuantumRegister(2)
-    cr = ClassicalRegister(2)
-    qcArr = reps*(dimW1+dimW2)*['']
-    names = reps*(dimW1+dimW2)*['']
+    qr = QuantumRegister(2, "qr")
+    cr = ClassicalRegister(2, "cr")
+    qcArr = 4*reps*(dimW1+dimW2)*['']
+    names = 4*reps*(dimW1+dimW2)*['']
 
     # res1 = np.zeros((arrZipped.shape[0],shots,1))
     idx = 0
-    for rep in range(reps):
+    for rep in range(4*reps):
         #Now call relevant code for weight 1.
         arrState = np.array(['o','x'])
         arrBasis = np.array(['x','y'])
@@ -125,7 +125,7 @@ def buildJob(opSeq, shots, backend, reps):
         for i in arrZipped:
             name = "Rep" + str(rep) + ",Weight 1," + i[0] + i[1]
             qc   = QuantumCircuit(qr, cr, name=name)
-            qcArr[idx] = getProg(opSeq, qc, qr, cr, weight=1, inState=i[1], mBasis=i[0])
+            qcArr[idx] = getProg((rep%reps)*opSeq, qc, qr, cr, weight=1, inState=i[1], mBasis=i[0])
             idx += 1
 
         #Now call relevant code for weight 2.
@@ -137,7 +137,7 @@ def buildJob(opSeq, shots, backend, reps):
         for i in arrZipped:
             name = "Rep" + str(rep) + ",Weight 2," + i[0] + i[1]
             qc   = QuantumCircuit(qr, cr, name=name)
-            qcArr[idx] = getProg(opSeq, qc, qr, cr, weight=2, inState=i[1], mBasis=i[0])
+            qcArr[idx] = getProg((rep%reps)*opSeq, qc, qr, cr, weight=2, inState=i[1], mBasis=i[0])
             idx += 1
     
     #RUN!!!
